@@ -230,7 +230,7 @@ class Iseed
             $this->addNewLines($inserts);
             $this->addIndent($inserts, 2);
             $inserts .= sprintf(
-                "\DB::table('%s')->insert(%s);",
+                "\DB::{{connection}}table('%s')->insert(%s);",
                 $table,
                 $this->prettifyArray($chunk, $indexed)
             );
@@ -259,6 +259,13 @@ class Iseed
         if (!is_null($table)) {
             $stub = str_replace('{{table}}', $table, $stub);
         }
+
+        $connection = '';
+        if ($this->databaseName) {
+            $connection = "connection('{$this->databaseName}')->";
+        }
+        $stub = str_replace('{{connection}}', $connection, $stub);
+        $inserts = str_replace('{{connection}}', $connection, $inserts);
 
         $postrunEventInsert = '';
         if ($postrunEvent) {
